@@ -15,21 +15,25 @@ export function Posts() {
   const [selectedPost, setSelectedPost] = useState(null);
 
   // useQuery("name of the query",query function)
-  const { data } = useQuery("posts", fetchPosts);
-  console.log(data);
+  const { data, isError, isLoading, error } = useQuery("posts", fetchPosts);
+  if (isLoading) {
+    return <h3>Loading...</h3>;
+  }
+  if (isError) {
+    return <h3>{error.message}</h3>;
+  }
   return (
     <>
       <ul>
-        {data &&
-          data.map((post) => (
-            <li
-              key={post.id}
-              className="post-title"
-              onClick={() => setSelectedPost(post)}
-            >
-              {post.title}
-            </li>
-          ))}
+        {data.map((post) => (
+          <li
+            key={post.id}
+            className="post-title"
+            onClick={() => setSelectedPost(post)}
+          >
+            {post.title}
+          </li>
+        ))}
       </ul>
       <div className="pages">
         <button disabled onClick={() => {}}>
