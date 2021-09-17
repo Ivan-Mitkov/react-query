@@ -1,7 +1,7 @@
-import React from "react";
-import { useQuery } from "react-query";
+import React, { useState, useEffect } from "react";
+import { useQuery, useMutation } from "react-query";
 async function fetchComments(postId) {
-  console.log(postId);
+  // console.log(postId);
   const response = await fetch(
     `https://jsonplaceholder.typicode.com/comments?postId=${postId}`
   );
@@ -27,6 +27,8 @@ async function updatePost(postId) {
 export function PostDetail({ post }) {
   // replace with useQuery
   const { id } = post;
+  const [showDeleteMessage, setShowDeleteMessage] = useState(false);
+  const [showUpdateMessage, setShowUpdateMessage] = useState(false);
   const { data, isLoading, isError, error } = useQuery(
     /**
      * https://react-query.tanstack.com/guides/query-keys
@@ -44,18 +46,87 @@ export function PostDetail({ post }) {
       cacheTime: 1000,
     }
   );
+  //MUTATIONS
+  //https://react-query.tanstack.com/guides/mutations
+  //NO QUERY KEY, can take argument itself
+  const deleteMutation = useMutation((id) => deletePost(id), {
+    //CALLBACKS
+    // onSuccess: () => setShowMessage(true),
+    onError: () => setShowDeleteMessage(true),
+    // onMutate: () => setShowDeleteMessage(true),
+    onSettled: () => setShowDeleteMessage(true),
+  });
+  const updateMutation = useMutation((id) => updatePost(id), {
+    //CALLBACKS
+    // onSuccess: () => setShowMessage(true),
+    onError: () => setShowUpdateMessage(true),
+    // onMutate: () => setShowUpdateMessage(true),
+    onSettled: () => setShowUpdateMessage(true),
+  });
+
+  //Show message for only 5 s
+  const tempShowMessage = () => {
+    if (showDeleteMessage) {
+      setTimeout(() => {
+        setShowDeleteMessage(false);
+      }, 5000);
+    }
+    if (showUpdateMessage) {
+      setTimeout(() => {
+        setShowUpdateMessage(false);
+      }, 5000);
+    }
+  };
+  useEffect(() => {
+    if (showDeleteMessage) {
+      tempShowMessage();
+    }
+    if (showUpdateMessage) {
+      tempShowMessage();
+    }
+    console.log(`useEffect`);
+  }, [showDeleteMessage, showUpdateMessage]);
 
   if (isLoading) {
     return <h3>Loading...</h3>;
   }
   if (isError) {
-    return <h3>{error.message}</h3>;
+    return <h3>{error}</h3>;
   }
 
   return (
     <>
       <h3 style={{ color: "blue" }}>{post.title}</h3>
-      <button>Delete</button> <button>Update title</button>
+      <button onClick={() => deleteMutation.mutate(post.id)}>
+        Delete
+      </button>{" "}
+      {
+        //MESSAGES
+      }
+      {showDeleteMessage && deleteMutation.isError && (
+        <h3 style={{ color: "red" }}>{deleteMutation.error.message}</h3>
+      )}
+      {deleteMutation.isLoading && (
+        <h3 style={{ color: "blue" }}>Deleteing the post</h3>
+      )}
+      {showDeleteMessage && deleteMutation.isSuccess && (
+        <h3 style={{ color: "green" }}>Post deleted - not really &#128540; </h3>
+      )}
+      <button onClick={() => updateMutation.mutate(post.id)}>
+        Update title
+      </button>
+      {
+        //MESSAGES}
+      }
+      {showUpdateMessage && updateMutation.isError && (
+        <h3 style={{ color: "red" }}>{updateMutation.error.message}</h3>
+      )}
+      {updateMutation.isLoading && (
+        <h3 style={{ color: "blue" }}>Updating the post</h3>
+      )}
+      {showUpdateMessage && updateMutation.isSuccess && (
+        <h3 style={{ color: "green" }}>Post updated- not really &#128561; </h3>
+      )}
       <p>{post.body}</p>
       <h4>Comments</h4>
       {data.map((comment) => (

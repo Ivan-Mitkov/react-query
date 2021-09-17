@@ -32,7 +32,7 @@ export function Posts() {
     }
   }, [currentPage]);
   // useQuery("name of the query",query function,optiond:{staleTime:how long we tolerate stale data})
-  const { data, isError, isLoading, isFetching, error } = useQuery(
+  const { data, isError, isLoading, error } = useQuery(
     ["posts", currentPage],
     () => fetchPosts(currentPage),
     {
