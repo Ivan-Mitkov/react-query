@@ -64,8 +64,8 @@
     "react-hooks/exhaustive-deps": "warn",
     "react/no-array-index-key": "off",
     "react/react-in-jsx-scope": "off",
-    "prettier/prettier": "error",
     "react/jsx-one-expression-per-line": "off",
-    "react/jsx-curly-newline": "off"
+    "react/jsx-curly-newline": "off",
+    "prettier/prettier": ["error", { "endOfLine": "auto" }]
   }
 }
