@@ -1,4 +1,4 @@
-import { useQuery } from 'react-query';
+import { useQuery, useQueryClient } from 'react-query';
 
 import type { Treatment } from '../../../../../shared/types';
 import { axiosInstance } from '../../../axiosInstance';
@@ -32,4 +32,12 @@ export function useTreatments(): Treatment[] {
   );
 
   return data;
+}
+
+// populate the cache
+export function usePrefetchTreatment(): void {
+  // get the client
+  const client = useQueryClient();
+  // which useQuery should look for this data in the cache
+  client.prefetchQuery(queryKeys.treatments, getTreatments);
 }
