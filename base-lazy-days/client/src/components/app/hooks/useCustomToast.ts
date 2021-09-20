@@ -4,6 +4,7 @@ import {
   useToast,
   UseToastOptions,
 } from '@chakra-ui/react';
+/* https://chakra-ui.com/docs/feedback/toast */
 
 interface UseCustomToast {
   (options?: UseToastOptions | undefined): string | number | undefined;
