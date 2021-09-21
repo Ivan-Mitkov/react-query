@@ -1,4 +1,10 @@
-import { Dispatch, SetStateAction, useState } from 'react';
+import {
+  Dispatch,
+  SetStateAction,
+  useCallback,
+  useEffect,
+  useState,
+} from 'react';
 import { useQuery } from 'react-query';
 
 import type { Staff } from '../../../../../shared/types';
@@ -22,8 +28,19 @@ export function useStaff(): UseStaff {
   // for filtering staff by treatment
   const [filter, setFilter] = useState('all');
 
+  const filterStuff = useCallback(
+    (staff) => {
+      if (filter === 'all') {
+        return staff;
+      }
+      return filterByTreatment(staff, filter);
+    },
+    [filter],
+  );
   const fallbackValue = [];
-  const { data: staff = fallbackValue } = useQuery(queryKeys.staff, getStaff);
+  const { data: staff = fallbackValue } = useQuery(queryKeys.staff, getStaff, {
+    select: (staffToFliter) => filterStuff(staffToFliter),
+  });
 
   return { staff, filter, setFilter };
 }
